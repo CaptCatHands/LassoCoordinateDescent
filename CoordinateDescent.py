@@ -70,6 +70,8 @@
 
 '''
 
+import numpy as np
+
 from xlrd import open_workbook
 
 class CoordinateDescent(object):
@@ -93,6 +95,22 @@ class CoordinateDescent(object):
                         value="null"
                     observations[row][col]=value
         return observations
+
+    def leastSquares(self, xmatrix, ymatrix):
+        '''
+        Reads in attributes and results to calculate coefficients using least squares
+        :param xmatrix: matrix of attribute values
+        :param ymatrix: matrix of results
+        :return: a matrix of coefficients beta
+        '''
+        #Initializing coefficient matrix of zeroes. Need to figure out dimensions from inputs.
+        bmatrix = np.zeros()
+        #only does 3 passes through the coordinate descent algorithm. Need to make it smarter
+        for i in range(0, 3):
+            xtemp = scipy.delete(xmatrix, i, 1)
+            btemp = scipy.delete(bmatrix, i, 0)
+            #The following line is a mess. Need to fix with numpy matrix methods
+            bmatrix[i,0] = ((xmatrix.transpose() * (ymatrix - (xtemp * btemp))) / (xmatrix.transpose() * xmatrix)
 
 def main(self):
     cd = CoordinateDescent()
