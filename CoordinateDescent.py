@@ -107,10 +107,16 @@ class CoordinateDescent(object):
         bmatrix = np.zeros()
         #only does 3 passes through the coordinate descent algorithm. Need to make it smarter
         for i in range(0, 3):
+            #Algorithm requires matrix with current i removed
             xtemp = scipy.delete(xmatrix, i, 1)
             btemp = scipy.delete(bmatrix, i, 0)
             #The following line is a mess. Need to fix with numpy matrix methods
-            bmatrix[i,0] = ((xmatrix.transpose() * (ymatrix - (xtemp * btemp))) / (xmatrix.transpose() * xmatrix)
+            numA = xmatrix.transpose()
+            numB = np.matmul(xtemp, btemp)
+            numC = np.subtract(ymatrix, numB)
+            numerator = np.matmul(numA, numB)
+            denominator = np.matmul(xmatrix, numA)
+            bmatrix[i,0] = np.divide(numerator, denominator)
 
 def main(self):
     cd = CoordinateDescent()
