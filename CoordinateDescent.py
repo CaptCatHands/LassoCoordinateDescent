@@ -153,7 +153,7 @@ def main(self):
     cd = CoordinateDescent()
     observations=cd.readData('Loan.xlsx')
 
-    # Case 1: Does home ownership and salary affect the loan grade?
+    # Case 1: Does home ownership and salary affect the interest rate?
     xValues=cd.homeOwnershipAnnualSalaryX(observations)
 
     for i in range(0,200):
