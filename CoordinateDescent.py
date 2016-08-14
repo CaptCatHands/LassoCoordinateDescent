@@ -136,7 +136,7 @@ class CoordinateDescent(object):
         # Initializing coefficient matrix of zeroes. Need to figure out dimensions from inputs.
         bmatrix = np.zeros()
         # only does a single pass through the coordinate descent algorithm. Need to make it smarter
-        for i in range(0, len(ymatrix)):
+        for i in range(0, len(xmatrix)):
             # Algorithm requires matrix with current i element removed
             xtemp = sp.delete(xmatrix, i, 1)
             btemp = sp.delete(bmatrix, i, 0)
@@ -147,6 +147,15 @@ class CoordinateDescent(object):
             numerator = np.dot(numA, numC)
             denominator = np.dot(xmatrix, numA)
             bmatrix[i,0] = np.divide(numerator, denominator)
+
+        return bmatrix
+
+    def lassoCoef(self, linReg):
+        '''
+        Lasso coefficient for linear regression calculated through coordinate descent
+        :param linReg:
+        :return:
+        '''
 
 def main(self):
     yValues=[0 for x in range(199)]
