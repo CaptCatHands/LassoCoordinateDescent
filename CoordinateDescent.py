@@ -126,26 +126,26 @@ class CoordinateDescent(object):
         return np.dot(firstPart, secondPart)
 
 
-    def leastSquares(self, xmatrix, ymatrix):
+    def linearRegression(self, xmatrix, ymatrix):
         '''
-        Reads in attributes and results to calculate coefficients using least squares
+        Reads in attributes and results to calculate linear regression coefficients using coordinate descent
         :param xmatrix: matrix of attribute values
         :param ymatrix: matrix of results
         :return: a matrix of coefficients beta
         '''
-        #Initializing coefficient matrix of zeroes. Need to figure out dimensions from inputs.
+        # Initializing coefficient matrix of zeroes. Need to figure out dimensions from inputs.
         bmatrix = np.zeros()
-        #only does 3 passes through the coordinate descent algorithm. Need to make it smarter
-        for i in range(0, 3):
-            #Algorithm requires matrix with current i removed
+        # only does a single pass through the coordinate descent algorithm. Need to make it smarter
+        for i in range(0, len(ymatrix)):
+            # Algorithm requires matrix with current i element removed
             xtemp = sp.delete(xmatrix, i, 1)
             btemp = sp.delete(bmatrix, i, 0)
-            #The following line is a mess. Need to fix with numpy matrix methods
+            # The following line is a mess. Need to fix with numpy matrix methods
             numA = xmatrix.transpose()
-            numB = np.matmul(xtemp, btemp)
+            numB = np.dot(xtemp, btemp)
             numC = np.subtract(ymatrix, numB)
-            numerator = np.matmul(numA, numB)
-            denominator = np.matmul(xmatrix, numA)
+            numerator = np.dot(numA, numC)
+            denominator = np.dot(xmatrix, numA)
             bmatrix[i,0] = np.divide(numerator, denominator)
 
 def main(self):
