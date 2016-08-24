@@ -113,49 +113,47 @@ class CoordinateDescent(object):
             #print str(x[i][0]) + "\t" + str(x[i][1]) + "\t" + str(x[i][2])
         return x
 
-    def findOLSBeta(self, x, y):
-        '''
-            (xT dot x)-1(xT dot y)
-        '''
-        x = np.array(x, dtype=float)
-        y = np.array(y, dtype=float)
-        xTranspose = np.transpose(x)
-        firstPart= np.linalg.inv(np.dot(xTranspose, x))
-        secondPart = np.dot(xTranspose, y)
+    def coordDescent(self, xmatrix, yvalues, lamb):
+        n = yvalues.size
+        p = len(xmatrix)
+        betas = np.zeros(n, 1)
+        for j in range(0, p):
+            if j = 0:
+                betas.item(0, 0) = bnot(xmatrix, yvalues, n, p)
+            else
+                betas.item(j, 0) = bother(xmatrix, yvalues, n, p, j, lamb)
+        return betas
 
-        return np.dot(firstPart, secondPart)
+    def bnot(self, xmatrix, yvalues, n, p):
+        outersum = 0
+        for i in range(1, n):
+            innersum = 0
+            for k in range(1, p):
+                innersum += xmatrix.item(i, k) * betas.item(k, 0)
+            outtersum += yvalues(i, 0) - innersum
+        return outersum / n
+
+    def bother(self, xmatrix, yvalues, n, p, j, lamb):
+        denom = 0
+        for i in range(1, n):
+            denom += (xmatrix(i, j))**2
+        t = lamb / (2 * denom)
+        outersum = 0
+        for i in range(1, n):
+            innersum = 0
+            for k in range(1, p:)
+                if k != j:
+                    innersum += xmatrix(i, k) * betas.item(k, 0)
+            outersum += xmatrix(i, j) * (yvalues(i, 0) )
+        x = outersum / denom
+        s = 0
+        if x < -t:
+            s = x + t
+        else if x > t:
+            s = x - t
+        return s
 
 
-    def linearRegression(self, xmatrix, ymatrix):
-        '''
-        Reads in attributes and results to calculate linear regression coefficients using coordinate descent
-        :param xmatrix: matrix of attribute values
-        :param ymatrix: matrix of results
-        :return: a matrix of coefficients beta
-        '''
-        # Initializing coefficient matrix of zeroes. Need to figure out dimensions from inputs.
-        bmatrix = np.zeros()
-        # only does a single pass through the coordinate descent algorithm. Need to make it smarter
-        for i in range(0, len(xmatrix)):
-            # Algorithm requires matrix with current i element removed
-            xtemp = sp.delete(xmatrix, i, 1)
-            btemp = sp.delete(bmatrix, i, 0)
-            # The following line is a mess. Need to fix with numpy matrix methods
-            numA = xmatrix.transpose()
-            numB = np.dot(xtemp, btemp)
-            numC = np.subtract(ymatrix, numB)
-            numerator = np.dot(numA, numC)
-            denominator = np.dot(xmatrix, numA)
-            bmatrix[i,0] = np.divide(numerator, denominator)
-
-        return bmatrix
-
-    def lassoCoef(self, linReg):
-        '''
-        Lasso coefficient for linear regression calculated through coordinate descent
-        :param linReg:
-        :return:
-        '''
 
 def main(self):
     yValues=[0 for x in range(199)]
