@@ -68,60 +68,26 @@
 '''
 
 import numpy as np
-import scipy as sp
+import pandas as pd
 
-from xlrd import open_workbook
 
 class CoordinateDescent(object):
 
-    def readData(self, dataFile):
-        '''
-            Reads in an MS Excel files and parses the data into a list (array)
-        '''
-        wb = open_workbook(dataFile)
-        observations=[[0 for x in range(57)] for y in range(200)]
-        for sheet in wb.sheets():
-            number_of_rows = sheet.nrows
-            number_of_columns = sheet.ncols
-            items = []
-            rows = []
-            for row in range(0, number_of_rows):
-                for col in range(number_of_columns):
-                    value = (sheet.cell(row, col).value)
-                    value = str(value)
-                    if value=="":
-                        value="null"
-                    observations[row][col]=value
-        return observations
-
-    def homeOwnershipAnnualSalaryX(self, observations):
-        '''
-            Get x matrix.  This is composed of the home ownership and salary
-        '''
-        x = [[0 for x in range(3)] for y in range(199)]
-        for i in range(0,200):
-            if i>0:
-                x[i-1][0] = 1
-                if observations[i][12] =="RENT":
-                    x[i-1][1] = 0
-                elif observations[i][12] =="MORTGAGE":
-                    x[i-1][1] = 1
-                else:
-                    x[i - 1][1] = 2
-                x[i-1][2] = observations[i][13]
-        #for i in range(0, 199):
-            #print str(x[i][0]) + "\t" + str(x[i][1]) + "\t" + str(x[i][2])
-        return x
-
-    def coordDescent(self, xmatrix, yvalues, lamb):
+    def coordDescent(self, xmatrix, yvalues, lamb, step):
         n = yvalues.size
         p = len(xmatrix)
         betas = np.zeros(n, 1)
-        for j in range(0, p):
-            if j = 0:
-                betas.item(0, 0) = bnot(xmatrix, yvalues, n, p)
-            else
-                betas.item(j, 0) = bother(xmatrix, yvalues, n, p, j, lamb)
+        betasOld = np.zeros(n, 1)
+        maxStep = step
+        while maxStep >= step:
+            for j in range(0, p):
+                if j = 0:
+                    betasOld.item(0,0) = betas.item(0, 0)
+                    betas.item(0, 0) = bnot(xmatrix, yvalues, n, p)
+                else
+                    betasOld.item(j, 0) = betas.item(j, 0)
+                    betas.item(j, 0) = bother(xmatrix, yvalues, n, p, j, lamb)
+            maxStep = np.amax(abs(betas - betasOld))
         return betas
 
     def bnot(self, xmatrix, yvalues, n, p):
@@ -146,7 +112,12 @@ class CoordinateDescent(object):
                     innersum += xmatrix(i, k) * betas.item(k, 0)
             outersum += xmatrix(i, j) * (yvalues(i, 0) )
         x = outersum / denom
-        s = 0
+        return x
+
+    def coeff(self, lamb, )
+      #move denom from bother to here
+
+    def shrinkage(self, x, t):
         if x < -t:
             s = x + t
         else if x > t:
@@ -156,19 +127,13 @@ class CoordinateDescent(object):
 
 
 def main(self):
-    yValues=[0 for x in range(199)]
-    cd = CoordinateDescent()
-    observations=cd.readData('Loan.xlsx')
 
-    # Case 1: Does home ownership and salary affect the interest rate?
-    xValues=cd.homeOwnershipAnnualSalaryX(observations)
+    prostate = pd.read_csv("../prostate/prostate.csv")
+    X_df = prostate[["lcavol", "lweight", "age", "lbph", "svi", "lcp", "gleason", "pgg45"]]
+    Y_df = prostate["lpsa"]
 
-    for i in range(0,200):
-        if i>0:
-            yValues[i-1]=float(observations[i][6])
-    betas = cd.findOLSBeta(xValues, yValues)
-    for i in range(len(betas)):
-        print(betas[i])
+
+
 
 
 if __name__ == '__main__':
