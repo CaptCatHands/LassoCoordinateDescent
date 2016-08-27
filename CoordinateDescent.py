@@ -21,6 +21,7 @@
 
 import pandas as pd
 import numpy as np
+from sklearn import linear_model
 
 
 class CoordinateDescent(object):
@@ -29,31 +30,35 @@ class CoordinateDescent(object):
     def coordDescent(self, xmatrix, yvalues, lamb, step):
         n = yvalues.size
         p = xmatrix.shape[1]
-        global betas
-        betas = np.zeros(shape=(n, 1))
-        betasOld = np.zeros(shape=(n, 1))
+        betas = np.zeros(shape=(p, 1))
+        betasOld = np.zeros(shape=(p, 1))
         maxStep = step
+
         while maxStep >= step:
             for j in range(0, p):
+                betasOld = betas
                 if j == 0:
-                    betasOld[0,0] = betas.item(0, 0)
-                    betas[0, 0] = self.bnot(xmatrix, yvalues, n, p)
+                    betasOld[0] = betas[0]
+                    betas[0] = self.bnot(xmatrix, yvalues, betas, n, p)
                 else:
-                    betasOld[j, 0] = betas.item(j, 0)
-                    betas[j, 0] = self.bother(xmatrix, yvalues, n, p, j, lamb)
-            maxStep = np.amax(abs(betas - betasOld))
+                    betasOld[j] = betas[j]
+                    betas[j] = self.bother(xmatrix, yvalues, betas, n, p, j, lamb)
+            maxStep = self.maxDif(betas, betasOld, p)
         return betas
 
-    def bnot(self, xmatrix, yvalues, n, p):
+    #Calculates the beta for j = 0
+    def bnot(self, xmatrix, yvalues, betas, n, p):
         outersum = 0
-        for i in range(0, n-1):
+        for i in range(1, n):
             innersum = 0
-            for k in range(0, p-1):
+            for k in range(1, p):
                 innersum += xmatrix[i, k] * betas[k, 0]
             outersum += yvalues[i] - innersum
         return outersum / n
 
-    def bother(self, xmatrix, yvalues, n, p, j, lamb):
+    #Calculates the beta for j = 1,2,...p
+    def bother(self, xmatrix, yvalues, betas, n, p, j, lamb):
+        #The next for lines need to be moved out of the loop to improve speed
         denom = 0
         for i in range(1, n):
             denom += (xmatrix[i, j])**2
@@ -70,7 +75,7 @@ class CoordinateDescent(object):
 
         return s
 
-
+    #The shrinkage function
     def shrinkage(self, x, t):
         if x < -t:
             s = x + t
@@ -79,6 +84,13 @@ class CoordinateDescent(object):
         else:
             s = 0
         return s
+
+    #Finds the maximum absolute difference between two vectors
+    def maxDif(self, betas, betasOld, p):
+        betadelta = np.zeros(shape=(p, 1))
+        for i in range(1, p):
+            betadelta[i] = abs(betas[i] - betasOld[i])
+        return np.amax(betadelta)
 
 
 
@@ -92,9 +104,19 @@ def main(self):
     y_vector = np.array(Y_df)
 
     cd = CoordinateDescent()
-    observations = cd.coordDescent(x_matrix, y_vector, 1, 1)
+    observations = cd.coordDescent(x_matrix, y_vector, 1, 0.000001)
 
-    print(observations)
+
+    print("Lasso coefficients using our implementation")
+    print(observations.transpose())
+    _lambda = 1.0
+
+    clf = linear_model.Lasso(alpha=_lambda, fit_intercept=True, max_iter=50000, tol=0.000001)
+    clf.fit(X_df, Y_df)
+    print("Lasso coefficients using sklearn.linear_model.Lasso")
+    print(np.append(clf.intercept_, clf.coef_))
+
+
 
 
 
