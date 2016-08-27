@@ -19,52 +19,54 @@
 
 '''
 
-import numpy as np
 import pandas as pd
+import numpy as np
 
 
 class CoordinateDescent(object):
 
+
     def coordDescent(self, xmatrix, yvalues, lamb, step):
         n = yvalues.size
-        p = len(xmatrix)
-        betas = np.zeros(n, 1)
-        betasOld = np.zeros(n, 1)
+        p = xmatrix.shape[1]
+        global betas
+        betas = np.zeros(shape=(n, 1))
+        betasOld = np.zeros(shape=(n, 1))
         maxStep = step
         while maxStep >= step:
             for j in range(0, p):
                 if j == 0:
-                    betasOld.item[0,0] = betas.item(0, 0)
-                    betas.item[0, 0] = bnot(xmatrix, yvalues, n, p)
+                    betasOld[0,0] = betas.item(0, 0)
+                    betas[0, 0] = self.bnot(xmatrix, yvalues, n, p)
                 else:
-                    betasOld.item[j, 0] = betas.item(j, 0)
-                    betas.item[j, 0] = bother(xmatrix, yvalues, n, p, j, lamb)
+                    betasOld[j, 0] = betas.item(j, 0)
+                    betas[j, 0] = self.bother(xmatrix, yvalues, n, p, j, lamb)
             maxStep = np.amax(abs(betas - betasOld))
         return betas
 
     def bnot(self, xmatrix, yvalues, n, p):
         outersum = 0
-        for i in range(1, n):
+        for i in range(0, n-1):
             innersum = 0
-            for k in range(1, p):
-                innersum += xmatrix.item(i, k) * betas.item(k, 0)
-            outersum += yvalues(i, 0) - innersum
+            for k in range(0, p-1):
+                innersum += xmatrix[i, k] * betas[k, 0]
+            outersum += yvalues[i] - innersum
         return outersum / n
 
     def bother(self, xmatrix, yvalues, n, p, j, lamb):
         denom = 0
         for i in range(1, n):
-            denom += (xmatrix(i, j))**2
+            denom += (xmatrix[i, j])**2
         t = lamb / (2 * denom)
         outersum = 0
         for i in range(1, n):
             innersum = 0
             for k in range(1, p):
                 if k != j:
-                    innersum += xmatrix(i, k) * betas.item(k, 0)
-            outersum += xmatrix(i, j) * (yvalues(i, 0) )
+                    innersum += xmatrix[i, k] * betas[k, 0]
+            outersum += xmatrix[i, j] * (yvalues[i] )
         x = outersum / denom
-        s = shrinkage(x, t)
+        s = self.shrinkage(x, t)
 
         return s
 
@@ -82,12 +84,15 @@ class CoordinateDescent(object):
 
 def main(self):
 
-    prostate = pd.read_csv("../prostate/prostate.csv")
+    prostate = pd.read_csv("./prostate.csv")
     X_df = prostate[["lcavol", "lweight", "age", "lbph", "svi", "lcp", "gleason", "pgg45"]]
     Y_df = prostate["lpsa"]
 
+    x_matrix = np.array(X_df)
+    y_vector = np.array(Y_df)
+
     cd = CoordinateDescent()
-    observations = cd.coordDescent(X_df, Y_df, 1, 1)
+    observations = cd.coordDescent(x_matrix, y_vector, 1, 1)
 
     print(observations)
 
