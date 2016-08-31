@@ -35,7 +35,7 @@ class CoordinateDescent(object):
         maxStep = step
 
         while maxStep >= step:
-            for j in range(0, p):
+            for j in range(p):
                 betasOld = betas
                 if j == 0:
                     betasOld[0] = betas[0]
@@ -49,9 +49,9 @@ class CoordinateDescent(object):
     #Calculates the beta for j = 0
     def bnot(self, xmatrix, yvalues, betas, n, p):
         outersum = 0
-        for i in range(1, n):
+        for i in range(n):
             innersum = 0
-            for k in range(1, p):
+            for k in range(p):
                 innersum += xmatrix[i, k] * betas[k, 0]
             outersum += yvalues[i] - innersum
         return outersum / n
@@ -60,16 +60,16 @@ class CoordinateDescent(object):
     def bother(self, xmatrix, yvalues, betas, n, p, j, lamb):
         #The next for lines need to be moved out of the loop to improve speed
         denom = 0
-        for i in range(1, n):
+        for i in range(n):
             denom += (xmatrix[i, j])**2
         t = lamb / (2 * denom)
         outersum = 0
-        for i in range(1, n):
+        for i in range(n):
             innersum = 0
-            for k in range(1, p):
+            for k in range(p):
                 if k != j:
                     innersum += xmatrix[i, k] * betas[k, 0]
-            outersum += xmatrix[i, j] * (yvalues[i] )
+            outersum += xmatrix[i, j] * (yvalues[i] - innersum)
         x = outersum / denom
         s = self.shrinkage(x, t)
 
@@ -88,7 +88,7 @@ class CoordinateDescent(object):
     #Finds the maximum absolute difference between two vectors
     def maxDif(self, betas, betasOld, p):
         betadelta = np.zeros(shape=(p, 1))
-        for i in range(1, p):
+        for i in range(p):
             betadelta[i] = abs(betas[i] - betasOld[i])
         return np.amax(betadelta)
 
