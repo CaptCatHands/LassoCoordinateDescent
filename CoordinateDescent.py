@@ -1,7 +1,6 @@
 '''
     Dimitri Ambrazis
     Jones Devlin
-    Final Project August 2016
 
     The Coordinate Descent class takes in an excel file, parses it, and performs coordinate descent on the data
     per prior-determined specifications.  The goal is to see what betas are produced.
@@ -26,6 +25,11 @@ from sklearn import linear_model
 
 class CoordinateDescent(object):
 
+    def __init__(self, xmatrix, yvalues, lamb, step):
+        self.xmatrix = xmatrix
+        self.yvalues = yvalues
+        self.lamb = lamb
+        self.step = step
 
     def coordDescent(self, xmatrix, yvalues, lamb, step):
         n = yvalues.size
