@@ -31,22 +31,22 @@ class CoordinateDescent(object):
         self.lamb = lamb
         self.step = step
 
-    def coordDescent(self, xmatrix, yvalues, lamb, step):
-        n = yvalues.size
-        p = xmatrix.shape[1]
+    def coordDescent(self):
+        n = self.yvalues.size
+        p = self.xmatrix.shape[1]
         betas = np.zeros(shape=(p, 1))
         betasOld = np.zeros(shape=(p, 1))
-        maxStep = step
+        maxStep = self.step
 
         while maxStep >= step:
             for j in range(p):
                 betasOld = betas
                 if j == 0:
                     betasOld[0] = betas[0]
-                    betas[0] = self.bnot(xmatrix, yvalues, betas, n, p)
+                    betas[0] = self.bnot(self.xmatrix, self.yvalues, betas, n, p)
                 else:
                     betasOld[j] = betas[j]
-                    betas[j] = self.bother(xmatrix, yvalues, betas, n, p, j, lamb)
+                    betas[j] = self.bother(self.xmatrix, self.yvalues, betas, n, p, j, lamb)
             maxStep = self.maxDif(betas, betasOld, p)
         return betas
 
@@ -56,7 +56,7 @@ class CoordinateDescent(object):
         for i in range(n):
             innersum = 0
             for k in range(p):
-                innersum += xmatrix[i, k] * betas[k, 0]
+                innersum += self.xmatrix[i, k] * betas[k, 0]
             outersum += yvalues[i] - innersum
         return outersum / n
 
@@ -107,12 +107,13 @@ def main(self):
     x_matrix = np.array(X_df)
     y_vector = np.array(Y_df)
 
-    cd = CoordinateDescent()
-    observations = cd.coordDescent(x_matrix, y_vector, 1, 0.000001)
+    observations = CoordinateDescent(x_matrix, y_vector, 1, 0.000001)
+    
 
 
     print("Lasso coefficients using our implementation")
-    print(observations.transpose())
+    print(observations.coordDescent.transpose())
+    #print(observations)
     _lambda = 1.0
 
     clf = linear_model.Lasso(alpha=_lambda, fit_intercept=True, max_iter=50000, tol=0.000001)
