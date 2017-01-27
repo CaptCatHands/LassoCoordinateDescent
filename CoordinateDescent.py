@@ -2,8 +2,8 @@
     Dimitri Ambrazis
     Jones Devlin
 
-    The Coordinate Descent class takes in an excel file, parses it, and performs coordinate descent on the data
-    per prior-determined specifications.  The goal is to see what betas are produced.
+    The Coordinate Descent class takes in an excel file, parses it, and performs coordinate descent
+    on the data per prior-determined specifications.  The goal is to see what betas are produced.
 
     Data Key:
          observations[0] = lcavol
@@ -38,7 +38,7 @@ class CoordinateDescent(object):
         betasOld = np.zeros(shape=(p, 1))
         maxStep = self.step
 
-        while maxStep >= step:
+        while maxStep >= self.step:
             for j in range(p):
                 betasOld = betas
                 if j == 0:
@@ -112,8 +112,8 @@ def main(self):
 
 
     print("Lasso coefficients using our implementation")
-    print(observations.coordDescent.transpose())
-    #print(observations)
+    #print(observations.coordDescent.transpose())
+    print(observations.coordDescent())
     _lambda = 1.0
 
     clf = linear_model.Lasso(alpha=_lambda, fit_intercept=True, max_iter=50000, tol=0.000001)
